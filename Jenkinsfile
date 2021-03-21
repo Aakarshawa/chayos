@@ -2,7 +2,7 @@ pipeline {
   agent any
   stages {
           stage('Checkout') {
-              git url: 'git@github.com:Aakarshawa/Assignment_chayos.git', credentialsId: 'chayos', branch: 'master'
+              git url: 'git@github.com:Aakarshawa/chayos.git', credentialsId: 'chayos', branch: 'master'
           }
 
           stage('Build') {
