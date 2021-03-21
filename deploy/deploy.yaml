@@ -1,0 +1,85 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rest-service
+  labels:
+    app: rest-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rest-service
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: rest-service
+    spec:
+      containers:
+      - name: rest-service
+        image: rest-service:1.0.0
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          successThreshold: 1
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 80
+          periodSeconds: 5
+          successThreshold: 1
+        env:
+        - name: JVM_OPTS
+          value: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1 -Xms512M"
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rest-service
+  labels:
+    app: rest-service
+spec:
+  type: NodePort
+  ports:
+  - targetPort: 8080
+    port: 8080
+    nodePort: 30022
+  selector:
+    app: rest-service
