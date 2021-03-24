@@ -30,12 +30,10 @@ pipeline {
 				label 'JavaAgent'
 			}
 			steps{
-				dir ('rest-service') {
-          script{
-                 sh "docker build -t rest-service:${env.version}"
-                 sh " docker tag rest-service:${env.version} Aakarshawa/rest-service:${env.version}"
-              }		
-        }
+          	   script{
+                     sh "docker build -t rest-service:${env.version}"
+                     sh " docker tag rest-service:${env.version} Aakarshawa/rest-service:${env.version}"
+                   }	
 			}
 		}
 		stage('Push Docker Image''){
