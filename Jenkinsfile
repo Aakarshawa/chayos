@@ -19,9 +19,9 @@ pipeline {
 			steps{
 				script{
                     sh 'mvn clean install'
-					         def pom = readMavenPom file:'complete/pom.xml'
-					         print pom.version
-					         env.version = pom.version
+		    def pom = readMavenPom file:'complete/pom.xml'
+		    print pom.version
+	            env.version = pom.version
 				}					
 			}
 		}
